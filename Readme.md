@@ -1,70 +1,108 @@
-# Node.js CI/CD Deployment on AWS ECS Fargate
+# 🚀 CI/CD Pipeline for Dockerized Node.js App on AWS ECS Fargate
 
-This project demonstrates a fully automated CI/CD pipeline for a containerized Node.js application using a serverless architecture.
-
-## Architecture Overview
-* **Source:** GitHub
-* **Registry:** Amazon ECR (Elastic Container Registry)
-* **Build:** AWS CodeBuild
-* **Orchestration:** Amazon ECS (Elastic Container Service)
-* **Compute:** AWS Fargate (Serverless)
-* **Pipeline:** AWS CodePipeline
+## 📌 Overview
+Implemented an end-to-end CI/CD pipeline to automate the build and deployment of a containerized Node.js application using AWS services. The solution enables seamless, zero-touch deployments with a scalable, serverless architecture.
 
 ---
 
-## 1. Containerization & Source
-The application is a Node.js Express server. A Dockerfile is used to package the app into a standardized image.
+## Architecture
 
-* **Base Image:** node:18
-* **Exposed Port:** 3000
-
-> **[Insert Screenshot: Your GitHub repository file list showing Dockerfile and app.js]**
+GitHub → AWS CodePipeline → AWS CodeBuild → Amazon ECR → Amazon ECS (Fargate)
 
 ---
 
-## 2. Automated Build (CI)
-AWS CodeBuild uses a `buildspec.yml` file to automate the lifecycle of the Docker image.
+## ⚙️ Tech Stack
 
-**Key Build Steps:**
-1. Authenticate with Amazon ECR.
-2. Build the Docker image.
-3. Push the image to the private ECR repository.
-4. Generate an `imagedefinitions.json` artifact for the deployment stage.
-
-> **[Insert Screenshot: AWS CodeBuild "Build history" showing a Succeeded status]**
-
----
-
-## 3. Infrastructure & Orchestration
-The application is hosted on **Amazon ECS** using the **AWS Fargate** launch type, removing the need to manage EC2 instances.
-
-* **Cluster:** my-node-cluster
-* **Task Definition:** Configured with 0.5 vCPU and 1 GB RAM.
-* **Service:** my-node-service (Running 1 Task).
-* **Security:** Inbound TCP traffic allowed on Port 3000.
-
-> **[Insert Screenshot: Amazon ECS Console showing the Task status as RUNNING]**
+- **Backend:** Node.js (Express)
+- **Containerization:** Docker
+- **CI/CD:** AWS CodePipeline, AWS CodeBuild
+- **Container Registry:** Amazon ECR
+- **Orchestration:** Amazon ECS
+- **Compute:** AWS Fargate
+- **Cloud Platform:** AWS
 
 ---
 
-## 4. CI/CD Pipeline (CD)
-**AWS CodePipeline** automates the flow from code commit to live deployment. Any change pushed to the GitHub repository automatically triggers a new build and updates the ECS service with zero downtime.
+## Implementation Details
 
-> **[Insert Screenshot: AWS CodePipeline dashboard showing all stages in GREEN]**
+### 1. Containerization
+- Created a Dockerfile using `node:18` base image  
+- Configured working directory and exposed port **3000**  
+- Pushed source code to GitHub repository  
+
+### 2. Amazon ECR
+- Created private repository: `node-app-repo`  
+- Enabled image scanning on push  
+
+### 3. Build Automation (CodeBuild)
+- Configured project: `node-app-build`  
+- Enabled **privileged mode** for Docker builds  
+- Used `buildspec.yml` to:
+  - Authenticate with ECR  
+  - Build Docker image  
+  - Tag with commit ID  
+  - Push image to ECR  
+  - Generate `imagedefinitions.json`  
+
+### 4. ECS Deployment
+- **Cluster:** `my-node-cluster`  
+- **Task Definition:** `node-app-task`  
+  - 0.5 vCPU, 1 GB RAM  
+  - Port 3000 mapping  
+- **Service:** `node-app-service`  
+  - Running 1 task  
+  - Public IP enabled  
+
+### 5. CI/CD Pipeline
+- **Pipeline Name:** `node-app-pipeline`  
+- Stages:
+  1. Source (GitHub)  
+  2. Build (CodeBuild)  
+  3. Deploy (ECS)  
+
+- Automatic deployment triggered on every code push  
 
 ---
 
-## 5. Deployment Verification
-The live application is accessible via the Public IP of the running Fargate task.
+## CI/CD Workflow
 
-**URL Format:** `http://<Task-Public-IP>:3000`
-
-> **[Insert Screenshot: Browser window displaying the live Node.js application]**
+1. Developer pushes code to GitHub  
+2. CodePipeline detects changes  
+3. CodeBuild builds and pushes Docker image to ECR  
+4. ECS service is updated with the new image  
+5. Application is redeployed with zero downtime  
 
 ---
 
-## Local Development
-1. **Clone the repo:** `git clone <repo-url>`
-2. **Install dependencies:** `npm install`
-3. **Build image:** `docker build -t node-app .`
-4. **Run container:** `docker run -p 3000:3000 node-app`
+## 📸 Project Screenshots
+
+### 🔹 CodeBuild - Build Success
+![Build](screenshots/build.png)
+
+### 🔹 ECS - Running Service
+![ECS](screenshots/ecs.png)
+
+### 🔹 CodePipeline - Successful Execution
+![Pipeline](screenshots/pipeline.png)
+
+### 🔹 Live Application
+![App](screenshots/app.png)
+
+---
+
+## 🌐 Deployment
+
+The application is deployed on AWS ECS Fargate and accessible via:
+
+http://<public-ip>:3000
+
+---
+
+## Local Setup
+
+```bash
+git clone <your-repo-url>
+cd <project-folder>
+npm install
+docker build -t node-app .
+docker run -p 3000:3000 node-app
