@@ -94,7 +94,7 @@ GitHub → AWS CodePipeline → AWS CodeBuild → Amazon ECR → Amazon ECS (Far
 
 The application is deployed on AWS ECS Fargate and accessible via:
 
-http://<public-ip>:3000
+http://'<public-ip>':3000
 
 ---
 
